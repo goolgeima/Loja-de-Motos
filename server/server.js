@@ -3,6 +3,7 @@ const cors = require("cors");
 require("dotenv").config();
 
 const motoRoutes = require("./routes/moto-routes");
+const usuarioRoutes = require("./routes/usuario-routes");
 
 const app = express();
 app.use(cors());
@@ -17,9 +18,13 @@ app.get("/health", (req, res) => {
 app.get("/ping", (req, res) => {
   res.status(200).send("pong");
 });
+//usar json pras requisicoes
+app.use(express.json());
 
-// rotas de motos
+// rotas das entidades cadastradas
 app.use("/motos", motoRoutes);
+app.use("/usuarios", usuarioRoutes);
+
 
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);

@@ -6,14 +6,17 @@ const {
   atualizarMoto,
   deletarMoto,
 } = require("../controllers/moto-controller");
+const somenteVendedores = require("../middlewares/auth-admin");
 
 const router = express.Router();
 
-// Base: /motos
-router.get("/", listarMotos);        // GET /motos
-router.post("/", criarMoto);         // POST /motos
-router.get("/:id", obterMotoPorId);  // GET /motos/:id
-router.put("/:id", atualizarMoto);   // PUT /motos/:id
-router.delete("/:id", deletarMoto);  // DELETE /motos/:id
+// qualquer um 
+router.get("/", listarMotos);
+router.get("/:id", obterMotoPorId);
+
+// só vendedores
+router.post("/", somenteVendedores, criarMoto);
+router.put("/:id", somenteVendedores, atualizarMoto);
+router.delete("/:id", somenteVendedores, deletarMoto);
 
 module.exports = router;
