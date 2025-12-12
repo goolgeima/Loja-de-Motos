@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import "./MotosPage.css";
 
 export function MotosPage({ usuario }) {
   const [motos, setMotos] = useState([]);
@@ -140,11 +141,11 @@ export function MotosPage({ usuario }) {
   }
 
   return (
-    <div>
+    <div className="motos-root">
       <h2>Lista de motos</h2>
 
       <div className="motos-layout">
-        <div className="motos-list card">
+        <div className="motos-list">
           <ul>
             {motos.map((m) => (
               <li key={m.id}>
@@ -154,9 +155,7 @@ export function MotosPage({ usuario }) {
                 </div>
                 {usuario.perfil === "VENDEDOR" && (
                   <div className="moto-actions">
-                    <button onClick={() => carregarParaEdicao(m)}>
-                      Editar
-                    </button>
+                    <button onClick={() => carregarParaEdicao(m)}>Editar</button>
                     <button onClick={() => handleExcluirMoto(m.id)}>
                       Excluir
                     </button>
@@ -168,55 +167,56 @@ export function MotosPage({ usuario }) {
         </div>
 
         {usuario.perfil === "VENDEDOR" && (
-          <div className="motos-form card">
+          <div className="motos-form">
             <h3>{editandoId ? "Editar moto" : "Cadastrar nova moto"}</h3>
             <form onSubmit={handleSalvarMoto}>
               <input
-                placeholder="id"
+                placeholder="ID da moto"
                 value={id}
                 onChange={(e) => setId(e.target.value)}
                 disabled={!!editandoId}
               />
               <input
-                placeholder="marca"
+                placeholder="Marca"
                 value={marca}
                 onChange={(e) => setMarca(e.target.value)}
               />
               <input
-                placeholder="modelo"
+                placeholder="Modelo"
                 value={modelo}
                 onChange={(e) => setModelo(e.target.value)}
               />
               <input
-                placeholder="ano"
+                placeholder="Ano"
                 value={ano}
                 onChange={(e) => setAno(e.target.value)}
               />
               <input
-                placeholder="cilindrada"
+                placeholder="Cilindrada (cc)"
                 value={cilindrada}
                 onChange={(e) => setCilindrada(e.target.value)}
               />
               <input
-                placeholder="cavalos"
+                placeholder="Cavalos (cv)"
                 value={cavalos}
                 onChange={(e) => setCavalos(e.target.value)}
               />
               <input
-                placeholder="estilo"
+                placeholder="Estilo"
                 value={estilo}
                 onChange={(e) => setEstilo(e.target.value)}
               />
               <input
-                placeholder="quilometragem"
+                placeholder="Quilometragem (km)"
                 value={quilometragem}
                 onChange={(e) => setQuilometragem(e.target.value)}
               />
               <input
-                placeholder="preço"
+                placeholder="Preço (R$)"
                 value={preco}
                 onChange={(e) => setPreco(e.target.value)}
               />
+
               <button type="submit">
                 {editandoId ? "Atualizar moto" : "Salvar moto"}
               </button>

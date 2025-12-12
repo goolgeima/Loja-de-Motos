@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import "./VendasPage.css";
 
 export function VendasPage({ usuario }) {
   const [vendas, setVendas] = useState([]);
@@ -8,11 +9,14 @@ export function VendasPage({ usuario }) {
 
   const [id, setId] = useState("");
   const [idMoto, setIdMoto] = useState("");
-  const [loginCliente, setLoginCliente] = useState("");
-  const [loginVendedor, setLoginVendedor] = useState("");
+  const [nomeCliente, setNomeCliente] = useState("");
+  const [nomeVendedor, setNomeVendedor] = useState("");
   const [data, setData] = useState("");
   const [valor, setValor] = useState("");
   const [formaPagamento, setFormaPagamento] = useState("");
+
+  const [campoOrdenacao, setCampoOrdenacao] = useState("data");
+  const [direcaoOrdenacao, setDirecaoOrdenacao] = useState("desc");
 
   useEffect(() => {
     async function carregarTudo() {
@@ -38,22 +42,34 @@ export function VendasPage({ usuario }) {
 
   async function handleCriarVenda(e) {
     e.preventDefault();
-    
-    // logs de erros
-    if (!id || isNaN(idNum) || id <= 0) {
-        alert("Informe um ID válido.");
-        return;
+
+    const idNum = Number(id);
+    if (!id || isNaN(idNum) || idNum <= 0) {
+      alert("Informe um ID válido.");
+      return;
     }
+
+    if (
+      !idMoto ||
+      !nomeCliente ||
+      !nomeVendedor ||
+      !data ||
+      !valor ||
+      !formaPagamento
+    ) {
+      alert("Preencha todos os campos da venda.");
+      return;
+    }
+
     const nova = {
-      id: Number(id),
+      id: idNum,
       id_moto: Number(idMoto),
-      login_cliente: loginCliente,
-      login_vendedor: loginVendedor,
+      nome_cliente: nomeCliente,
+      nome_vendedor: nomeVendedor,
       data,
       valor: Number(valor),
       forma_pagamento: formaPagamento,
     };
-    
 
     const resp = await fetch("http://localhost:3000/vendas", {
       method: "POST",
@@ -74,32 +90,100 @@ export function VendasPage({ usuario }) {
 
     setId("");
     setIdMoto("");
-    setLoginCliente("");
-    setLoginVendedor("");
+    setNomeCliente("");
+    setNomeVendedor("");
     setData("");
     setValor("");
     setFormaPagamento("");
   }
 
+  function getModeloMoto(idMoto) {
+    const moto = motos.find((m) => m.id === Number(idMoto));
+    return moto ? `${moto.marca} ${moto.modelo}` : `Moto ${idMoto}`;
+  }
+
+  const totalVendas = vendas.length;
+  const valorTotal = vendas.reduce(
+    (soma, v) => soma + (Number(v.valor) || 0),
+    0
+  );
+
+  // ordenação
+  const vendasOrdenadas = [...vendas].sort((a, b) => {
+    const dir = direcaoOrdenacao === "asc" ? 1 : -1;
+
+    if (campoOrdenacao === "valor") {
+      return (a.valor - b.valor) * dir;
+    }
+    if (campoOrdenacao === "data") {
+      return a.data.localeCompare(b.data) * dir;
+    }
+
+    const va = String(a[campoOrdenacao] || "");
+    const vb = String(b[campoOrdenacao] || "");
+    return va.localeCompare(vb) * dir;
+  });
+
+  const ultimasVendas = vendasOrdenadas.slice(0, 5);
+
   return (
-    <div>
+    <div className="vendas-root">
       <h2>Vendas</h2>
 
-      <ul>
-        {vendas.map((v) => (
+      <div className="vendas-dashboard">
+        <div className="vd-card">
+          <span className="vd-label">Total de vendas</span>
+          <span className="vd-value">{totalVendas}</span>
+        </div>
+        <div className="vd-card">
+          <span className="vd-label">Valor total vendido</span>
+          <span className="vd-value">
+            {valorTotal.toLocaleString("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+            })}
+          </span>
+        </div>
+      </div>
+
+            <h3>Histórico de Vendas</h3>
+      <div className="vendas-ordenacao">
+        <span>Ordenar por:</span>
+        <select
+          value={campoOrdenacao}
+          onChange={(e) => setCampoOrdenacao(e.target.value)}
+        >
+          <option value="data">Data</option>
+          <option value="valor">Valor</option>
+          <option value="nome_cliente">Nome do cliente</option>
+          <option value="nome_vendedor">Nome do vendedor</option>
+        </select>
+
+        <select
+          value={direcaoOrdenacao}
+          onChange={(e) => setDirecaoOrdenacao(e.target.value)}
+        >
+          <option value="asc">Crescente</option>
+          <option value="desc">Decrescente</option>
+        </select>
+      </div>
+
+      <ul className="vendas-list">
+        {vendasOrdenadas.map((v) => (
           <li key={v.id}>
-            #{v.id} - Moto {v.id_moto} - Cliente {v.login_cliente} - Vendedor{" "}
-            {v.login_vendedor} - {v.data} - R${v.valor} ({v.forma_pagamento})
+            #{v.id} - {getModeloMoto(v.id_moto)} - Cliente {v.nome_cliente} -
+            Vendedor {v.nome_vendedor} - {v.data} - R${v.valor} (
+            {v.forma_pagamento})
           </li>
         ))}
       </ul>
 
       {usuario.perfil === "VENDEDOR" && (
-        <div>
+        <div className="vendas-form">
           <h3>Registrar nova venda</h3>
           <form onSubmit={handleCriarVenda}>
             <input
-              placeholder="id"
+              placeholder="ID da venda"
               value={id}
               onChange={(e) => setId(e.target.value)}
             />
@@ -108,7 +192,9 @@ export function VendasPage({ usuario }) {
               value={idMoto}
               onChange={(e) => setIdMoto(e.target.value)}
             >
-              <option value="">Selecione a moto</option>
+              <option value="" disabled>
+                Selecione a moto
+              </option>
               {motos.map((m) => (
                 <option key={m.id} value={m.id}>
                   {m.id} - {m.marca} {m.modelo}
@@ -117,45 +203,57 @@ export function VendasPage({ usuario }) {
             </select>
 
             <select
-              value={loginCliente}
-              onChange={(e) => setLoginCliente(e.target.value)}
+              value={nomeCliente}
+              onChange={(e) => setNomeCliente(e.target.value)}
             >
-              <option value="">Selecione o cliente</option>
+              <option value="" disabled>
+                Selecione o cliente
+              </option>
               {clientes.map((c) => (
-                <option key={c.id} value={c.login}>
-                  {c.login} - {c.nome}
+                <option key={c.id} value={c.nome}>
+                  {c.id} - {c.nome}
                 </option>
               ))}
             </select>
 
             <select
-              value={loginVendedor}
-              onChange={(e) => setLoginVendedor(e.target.value)}
+              value={nomeVendedor}
+              onChange={(e) => setNomeVendedor(e.target.value)}
             >
-              <option value="">Selecione o vendedor</option>
+              <option value="" disabled>
+                Selecione o vendedor
+              </option>
               {vendedores.map((v) => (
-                <option key={v.id} value={v.login}>
-                  {v.login} - {v.nome}
+                <option key={v.id} value={v.nome}>
+                  {v.id} - {v.nome}
                 </option>
               ))}
             </select>
 
             <input
-            placeholder="Selecione a data"
+              placeholder="Data da venda"
               type="date"
               value={data}
               onChange={(e) => setData(e.target.value)}
             />
             <input
-              placeholder="Selecione o valor"
+              placeholder="Valor (R$)"
               value={valor}
               onChange={(e) => setValor(e.target.value)}
             />
-            <input
-              placeholder="Selecione a forma de pagamento"
+
+            <select
               value={formaPagamento}
               onChange={(e) => setFormaPagamento(e.target.value)}
-            />
+            >
+              <option value="" disabled>
+                Selecione a forma de pagamento
+              </option>
+              <option value="CREDITO">Crédito</option>
+              <option value="DEBITO">Débito</option>
+              <option value="PIX">Pix</option>
+              <option value="DINHEIRO">Dinheiro</option>
+            </select>
 
             <button type="submit">Salvar venda</button>
           </form>

@@ -1,6 +1,7 @@
 // Array em memória
 let usuarios = [
-  { login: "vendedor", senha: "123", perfil: "VENDEDOR", motoFavorita: "CB 500F" },
+  { login: "gustavovendedor", senha: "123", perfil: "VENDEDOR", motoFavorita: "GS 1300" },
+  { login: "gustavocliente", senha: "123", perfil: "CLIENTE", motoFavorita: "GS 1300" }
 ];
 
 // LISTAR todos
@@ -79,7 +80,6 @@ const login = (req, res) => {
     return res.status(401).json({ message: "Credenciais inválidas." });
   }
 
-  //vou gerar um token/JWT; por enquanto só devolve dados básicos
   res.status(200).json({
     message: "Login realizado com sucesso.",
     login: usuario.login,

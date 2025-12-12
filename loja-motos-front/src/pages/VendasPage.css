@@ -1,0 +1,173 @@
+.vendas-root h2 {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+/* Cards de resumo */
+.vendas-dashboard {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.vd-card {
+  flex: 1 1 180px;
+  background: #020617;
+  border-radius: 10px;
+  padding: 10px 12px;
+  border: 1px solid #1f2937;
+}
+
+.vd-label {
+  display: block;
+  font-size: 12px;
+  color: #9ca3af;
+  margin-bottom: 2px;
+}
+
+.vd-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: #f9fafb;
+}
+
+/* Ordenação */
+.vendas-ordenacao {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: #e5e7eb;
+}
+
+.vendas-ordenacao span {
+  font-weight: 500;
+}
+
+.vendas-ordenacao select {
+  background-color: #111827;
+  color: #e5e7eb;
+  border-radius: 6px;
+  padding: 4px 8px;
+  border: 1px solid #374151;
+}
+
+.vendas-ordenacao select:focus {
+  outline: none;
+  border-color: #22c55e;
+  box-shadow: 0 0 0 1px #22c55e33;
+}
+
+/* Lista de vendas */
+.vendas-list {
+  margin: 0 0 16px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vendas-list li {
+  padding: 6px 0;
+  border-bottom: 1px solid #1f2937;
+  font-size: 13px;
+  color: #e5e7eb;
+}
+
+.vendas-list li:last-child {
+  border-bottom: none;
+}
+
+/* Formulário */
+.vendas-form {
+  margin-top: 20px;
+  background: #020617;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid #1f2937;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+.vendas-form h3 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  color: #f9fafb;
+}
+
+/* grade em 2 colunas */
+.vendas-form form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 12px;
+}
+
+/* todos os campos ocupam 1 coluna por padrão */
+.vendas-form form input,
+.vendas-form form select {
+  width: 100%;
+  background-color: #111827;
+}
+
+/* placeholders */
+.vendas-form form input::placeholder {
+  color: #9ca3af;
+}
+
+/* foco */
+.vendas-form form input:focus,
+.vendas-form form select:focus {
+  background-color: #020617;
+  border-color: #22c55e;
+  box-shadow: 0 0 0 1px #22c55e33;
+}
+
+/* ajustar quais campos ocupam linha inteira */
+.vendas-form form input[placeholder="ID da venda"] {
+  grid-column: 1 / span 1;
+}
+
+.vendas-form form select:nth-of-type(1) {
+  grid-column: 2 / span 1; /* moto ao lado do ID */
+}
+
+/* cliente + vendedor: cada um em uma coluna da mesma linha */
+.vendas-form form select:nth-of-type(2) {
+  grid-column: 1 / span 1;
+}
+.vendas-form form select:nth-of-type(3) {
+  grid-column: 2 / span 1;
+}
+
+/* data + valor na mesma linha */
+.vendas-form form input[type="date"] {
+  grid-column: 1 / span 1;
+}
+.vendas-form form input[placeholder="Valor (R$)"] {
+  grid-column: 2 / span 1;
+}
+
+/* forma pagamento ocupa linha inteira */
+.vendas-form form select:last-of-type {
+  grid-column: 1 / -1;
+}
+
+/* botão na linha de baixo, alinhado à esquerda */
+.vendas-form form button {
+  grid-column: 1 / -1;
+  justify-self: flex-start;
+  margin-top: 4px;
+}
+
+/* Responsivo */
+@media (max-width: 800px) {
+  .vendas-form form {
+    grid-template-columns: 1fr;
+  }
+
+  .vendas-form form input[placeholder="ID da venda"],
+  .vendas-form form select,
+  .vendas-form form input[type="date"],
+  .vendas-form form input[placeholder="Valor (R$)"] {
+    grid-column: 1 / -1;
+  }
+}

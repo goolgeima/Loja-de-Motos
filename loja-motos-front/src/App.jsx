@@ -1,148 +1,118 @@
-import { useState, useEffect } from "react";
-import { MotosPage } from "./pages/MotosPage.jsx";
-import { ClientesPage } from "./pages/ClientesPage.jsx";
-import { VendedoresPage } from "./pages/VendedoresPage.jsx";
-import { VendasPage } from "./pages/VendasPage.jsx";
+import { useState } from "react";
 import "./App.css";
+import { MotosPage } from "./pages/MotosPage";
+import { ClientesPage } from "./pages/ClientesPage";
+import { VendedoresPage } from "./pages/VendedoresPage";
+import { VendasPage } from "./pages/VendasPage";
+import { UsuariosPage } from "./pages/UsuariosPage";
 
-function App() {
+export default function App() {
   const [usuario, setUsuario] = useState(null);
-  const [login, setLogin] = useState("");
-  const [senha, setSenha] = useState("");
-  const [pagina, setPagina] = useState(null); // nenhuma aba selecionada
-
-  useEffect(() => {
-    const salvo = localStorage.getItem("usuario");
-    if (salvo) setUsuario(JSON.parse(salvo));
-  }, []);
+  const [pagina, setPagina] = useState("motos");
 
   async function handleLogin(e) {
     e.preventDefault();
+    const login = e.target.login.value;
+    const senha = e.target.senha.value;
 
-    if (!login || !senha) {
-      alert("Preencha login e senha.");
+    const resp = await fetch("http://localhost:3000/usuarios/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ login, senha }),
+    });
+
+    if (!resp.ok) {
+      alert("Login inválido");
       return;
     }
 
-    try {
-      const resp = await fetch("http://localhost:3000/usuarios/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ login, senha }),
-      });
-
-      if (!resp.ok) {
-        alert("Login inválido");
-        return;
-      }
-
-      const data = await resp.json();
-      const info = { login: data.login, perfil: data.perfil };
-      setUsuario(info);
-      localStorage.setItem("usuario", JSON.stringify(info));
-      setPagina(null); // começa sem página selecionada
-    } catch {
-      alert("Erro ao conectar com o servidor");
-    }
+    const data = await resp.json();
+    setUsuario({ login: data.login, perfil: data.perfil });
+    setPagina("motos");
   }
 
-  function logout() {
+  function handleLogout() {
     setUsuario(null);
-    localStorage.removeItem("usuario");
-    setPagina(null);
-    setLogin("");
-    setSenha("");
-  }
-
-  function renderPagina() {
-    if (pagina === "motos") return <MotosPage usuario={usuario} />;
-    if (pagina === "clientes") return <ClientesPage usuario={usuario} />;
-    if (pagina === "vendedores") return <VendedoresPage usuario={usuario} />;
-    if (pagina === "vendas") return <VendasPage usuario={usuario} />;
-    return null; // nenhuma aba selecionada
+    setPagina("motos");
   }
 
   if (!usuario) {
     return (
-      <div className="login-page">
-        <form className="card login-card" onSubmit={handleLogin}>
+      <div className="app">
+        <div className="topbar card">
           <h1>Loja de Motos</h1>
-          <p className="login-subtitle">Acesse o painel</p>
-          <input
-            placeholder="Login"
-            value={login}
-            onChange={(e) => setLogin(e.target.value)}
-          />
-          <input
-            placeholder="Senha"
-            type="password"
-            value={senha}
-            onChange={(e) => setSenha(e.target.value)}
-          />
-          <button className="btn btn-primary" type="submit">
-            Entrar
-          </button>
-        </form>
+        </div>
+        <div className="content card login-box">
+          <h2>Login</h2>
+          <form onSubmit={handleLogin}>
+            <input name="login" placeholder="Login" />
+            <input name="senha" type="password" placeholder="Senha" />
+            <button type="submit">Entrar</button>
+          </form>
+        </div>
       </div>
     );
   }
 
+  let conteudo;
+  if (pagina === "motos") conteudo = <MotosPage usuario={usuario} />;
+  else if (pagina === "vendas") conteudo = <VendasPage usuario={usuario} />;
+  else if (usuario.perfil === "VENDEDOR") {
+    if (pagina === "clientes") conteudo = <ClientesPage usuario={usuario} />;
+    else if (pagina === "vendedores")
+      conteudo = <VendedoresPage usuario={usuario} />;
+    else if (pagina === "usuarios")
+      conteudo = <UsuariosPage usuario={usuario} />;
+    else conteudo = <MotosPage usuario={usuario} />;
+  } else {
+    conteudo = <MotosPage usuario={usuario} />;
+  }
+
   return (
     <div className="app">
-      <header className="topbar">
-        <div className="topbar-left">
-          <span className="logo">Loja de Motos</span>
+      <div className="topbar card">
+        <div>
+          <h1>Loja de Motos</h1>
+          <p>
+            Logado como {usuario.login} ({usuario.perfil})
+          </p>
         </div>
-        <div className="topbar-right">
-          <span className="user-info">
-            {usuario.login} ({usuario.perfil})
-          </span>
-          <button className="btn btn-danger" onClick={logout}>
-            Sair
-          </button>
-        </div>
-      </header>
+        <button onClick={handleLogout}>Sair</button>
+      </div>
 
-      <nav className="menu">
-        <button
-          className={pagina === "motos" ? "menu-btn active" : "menu-btn"}
-          onClick={() =>
-            setPagina((atual) => (atual === "motos" ? null : "motos"))
-          }
-        >
+      <div className="menu">
+        <button className="menu-btn" onClick={() => setPagina("motos")}>
           Motos
         </button>
-        <button
-          className={pagina === "clientes" ? "menu-btn active" : "menu-btn"}
-          onClick={() =>
-            setPagina((atual) => (atual === "clientes" ? null : "clientes"))
-          }
-        >
-          Clientes
-        </button>
-        <button
-          className={pagina === "vendedores" ? "menu-btn active" : "menu-btn"}
-          onClick={() =>
-            setPagina((atual) =>
-              atual === "vendedores" ? null : "vendedores"
-            )
-          }
-        >
-          Vendedores
-        </button>
-        <button
-          className={pagina === "vendas" ? "menu-btn active" : "menu-btn"}
-          onClick={() =>
-            setPagina((atual) => (atual === "vendas" ? null : "vendas"))
-          }
-        >
+        <button className="menu-btn" onClick={() => setPagina("vendas")}>
           Vendas
         </button>
-      </nav>
 
-      <main className="content">{renderPagina()}</main>
+        {usuario.perfil === "VENDEDOR" && (
+          <>
+            <button
+              className="menu-btn"
+              onClick={() => setPagina("clientes")}
+            >
+              Clientes
+            </button>
+            <button
+              className="menu-btn"
+              onClick={() => setPagina("vendedores")}
+            >
+              Vendedores
+            </button>
+            <button
+              className="menu-btn"
+              onClick={() => setPagina("usuarios")}
+            >
+              Usuários
+            </button>
+          </>
+        )}
+      </div>
+
+      <div className="content card">{conteudo}</div>
     </div>
   );
 }
-
-export default App;

@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
+import "./ClientesPage.css";
 
 export function ClientesPage({ usuario }) {
   const [clientes, setClientes] = useState([]);
 
   const [id, setId] = useState("");
-  const [login, setLogin] = useState("");
   const [nome, setNome] = useState("");
   const [cpf, setCpf] = useState("");
   const [telefone, setTelefone] = useState("");
@@ -21,7 +21,6 @@ export function ClientesPage({ usuario }) {
 
   function limparForm() {
     setId("");
-    setLogin("");
     setNome("");
     setCpf("");
     setTelefone("");
@@ -31,7 +30,6 @@ export function ClientesPage({ usuario }) {
   function carregarParaEdicao(c) {
     setEditandoId(c.id);
     setId(c.id);
-    setLogin(c.login);
     setNome(c.nome);
     setCpf(c.cpf);
     setTelefone(c.telefone);
@@ -39,19 +37,23 @@ export function ClientesPage({ usuario }) {
 
   async function handleSalvarCliente(e) {
     e.preventDefault();
-    if (!id || isNaN(idNum) || id <= 0) {
-        alert("Informe um ID válido.");
-        return;
-      }
+
+    const idNum = Number(id);
+    if (!id || isNaN(idNum) || idNum <= 0) {
+      alert("Informe um ID válido.");
+      return;
+    }
+    if (!nome || !cpf) {
+      alert("Preencha nome e CPF.");
+      return;
+    }
 
     const cliente = {
-      id: Number(id),
-      login,
+      id: idNum,
       nome,
       cpf,
       telefone,
     };
-
 
     const url = editandoId
       ? `http://localhost:3000/clientes/${editandoId}`
@@ -73,9 +75,10 @@ export function ClientesPage({ usuario }) {
     }
 
     const salvo = await resp.json();
-
     if (editandoId) {
-      setClientes((prev) => prev.map((c) => (c.id === editandoId ? salvo : c)));
+      setClientes((prev) =>
+        prev.map((c) => (c.id === editandoId ? salvo : c))
+      );
     } else {
       setClientes((prev) => [...prev, salvo]);
     }
@@ -103,67 +106,68 @@ export function ClientesPage({ usuario }) {
   }
 
   return (
-    <div>
+    <div className="clientes-root">
       <h2>Clientes</h2>
 
-      <ul>
-        {clientes.map((c) => (
-          <li key={c.id}>
-            {c.id} - {c.nome} ({c.login}) - CPF: {c.cpf} - Tel: {c.telefone}
-            {usuario.perfil === "VENDEDOR" && (
-              <>
-                {" "}
-                <button onClick={() => carregarParaEdicao(c)}>Editar</button>
-                <button onClick={() => handleExcluirCliente(c.id)}>
-                  Excluir
-                </button>
-              </>
-            )}
-          </li>
-        ))}
-      </ul>
-
-      {usuario.perfil === "VENDEDOR" && (
-        <div>
-          <h3>{editandoId ? "Editar cliente" : "Cadastrar novo cliente"}</h3>
-          <form onSubmit={handleSalvarCliente}>
-            <input
-              placeholder="id"
-              value={id}
-              onChange={(e) => setId(e.target.value)}
-              disabled={!!editandoId}
-            />
-            <input
-              placeholder="login"
-              value={login}
-              onChange={(e) => setLogin(e.target.value)}
-            />
-            <input
-              placeholder="nome"
-              value={nome}
-              onChange={(e) => setNome(e.target.value)}
-            />
-            <input
-              placeholder="cpf"
-              value={cpf}
-              onChange={(e) => setCpf(e.target.value)}
-            />
-            <input
-              placeholder="telefone"
-              value={telefone}
-              onChange={(e) => setTelefone(e.target.value)}
-            />
-            <button type="submit">
-              {editandoId ? "Atualizar cliente" : "Salvar cliente"}
-            </button>
-            {editandoId && (
-              <button type="button" onClick={limparForm}>
-                Cancelar edição
-              </button>
-            )}
-          </form>
+      <div className="clientes-layout">
+        <div className="clientes-list">
+          <ul>
+            {clientes.map((c) => (
+              <li key={c.id}>
+                <div className="cliente-info">
+                  {c.id} - {c.nome} - {c.cpf} - {c.telefone}
+                </div>
+                {usuario.perfil === "VENDEDOR" && (
+                  <div className="cliente-actions">
+                    <button onClick={() => carregarParaEdicao(c)}>Editar</button>
+                    <button onClick={() => handleExcluirCliente(c.id)}>
+                      Excluir
+                    </button>
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
         </div>
-      )}
+
+        {usuario.perfil === "VENDEDOR" && (
+          <div className="clientes-form">
+            <h3>{editandoId ? "Editar cliente" : "Cadastrar novo cliente"}</h3>
+            <form onSubmit={handleSalvarCliente}>
+              <input
+                placeholder="ID"
+                value={id}
+                onChange={(e) => setId(e.target.value)}
+                disabled={!!editandoId}
+              />
+              <input
+                placeholder="Nome"
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+              />
+              <input
+                placeholder="CPF"
+                value={cpf}
+                onChange={(e) => setCpf(e.target.value)}
+              />
+              <input
+                placeholder="Telefone"
+                value={telefone}
+                onChange={(e) => setTelefone(e.target.value)}
+              />
+
+              <button type="submit">
+                {editandoId ? "Atualizar cliente" : "Salvar cliente"}
+              </button>
+              {editandoId && (
+                <button type="button" onClick={limparForm}>
+                  Cancelar edição
+                </button>
+              )}
+            </form>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -1,0 +1,100 @@
+.clientes-root h2 {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+/* Layout geral */
+.clientes-layout {
+  display: grid;
+  grid-template-columns: 2fr 1.4fr;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+/* Lista */
+.clientes-list {
+  background: #020617;
+  padding: 14px 16px;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+  border: 1px solid #1f2937;
+}
+
+.clientes-list ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.clientes-list li {
+  padding: 6px 0;
+  border-bottom: 1px solid #1f2937;
+  font-size: 13px;
+  color: #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.clientes-list li:last-child {
+  border-bottom: none;
+}
+
+.cliente-info {
+  flex: 1;
+}
+
+/* Formulário */
+.clientes-form {
+  background: #020617;
+  padding: 14px 16px;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+  border: 1px solid #1f2937;
+  margin-top: 4px;
+}
+
+.clientes-form h3 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  color: #f9fafb;
+}
+
+.clientes-form form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 10px;
+}
+
+.clientes-form form input,
+.clientes-form form select {
+  width: 100%;
+  background-color: #111827;
+}
+
+.clientes-form form input::placeholder {
+  color: #9ca3af;
+}
+
+.clientes-form form input:focus,
+.clientes-form form select:focus {
+  background-color: #020617;
+  border-color: #22c55e;
+  box-shadow: 0 0 0 1px #22c55e33;
+}
+
+.clientes-form form button {
+  grid-column: 1 / -1;
+  justify-self: flex-start;
+}
+
+/* Responsivo */
+@media (max-width: 800px) {
+  .clientes-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .clientes-form form {
+    grid-template-columns: 1fr;
+  }
+}

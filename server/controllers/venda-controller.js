@@ -2,8 +2,8 @@ let vendas = [
   {
     id: 1,
     id_moto: 1,
-    login_vendedor: "vend1",
-    login_cliente: "cliente1",
+    nome_vendedor: "Cláudio",
+    nome_cliente: "Gustavo",
     data: "2025-12-07",
     valor: 35000,
     forma_pagamento: "CREDITO",
@@ -18,8 +18,8 @@ const criarVenda = (req, res) => {
   const {
     id,
     id_moto,
-    login_vendedor,
-    login_cliente,
+    nome_vendedor,
+    nome_cliente,
     data,
     valor,
     forma_pagamento,
@@ -28,19 +28,19 @@ const criarVenda = (req, res) => {
   if (
     !id ||
     !id_moto ||
-    !login_vendedor ||
-    !login_cliente ||
+    !nome_vendedor ||
+    !nome_cliente ||
     !data ||
     valor == null ||
     !forma_pagamento
   ) {
     return res.status(400).json({
       message:
-        "id, id_moto, login_vendedor, login_cliente, data, valor e forma_pagamento são obrigatórios.",
+        "id, id_moto, nome_vendedor, nome_cliente, data, valor e forma_pagamento são obrigatórios.",
     });
   }
 
-  const existente = vendas.find(v => v.id === Number(id));
+  const existente = vendas.find((v) => v.id === Number(id));
   if (existente) {
     return res.status(409).json({ message: "ID de venda já existe." });
   }
@@ -48,9 +48,9 @@ const criarVenda = (req, res) => {
   const nova = {
     id: Number(id),
     id_moto: Number(id_moto),
-    login_vendedor,
-    login_cliente,
-    data, // por enquanto string
+    nome_vendedor,
+    nome_cliente,
+    data,
     valor: Number(valor),
     forma_pagamento,
   };
@@ -61,21 +61,21 @@ const criarVenda = (req, res) => {
 
 const obterVendaPorId = (req, res) => {
   const id = Number(req.params.id);
-  const venda = vendas.find(v => v.id === id);
+  const venda = vendas.find((v) => v.id === id);
   if (!venda) return res.status(404).json({ message: "Venda não encontrada." });
   res.status(200).json(venda);
 };
 
 const atualizarVenda = (req, res) => {
   const id = Number(req.params.id);
-  const index = vendas.findIndex(v => v.id === id);
+  const index = vendas.findIndex((v) => v.id === id);
   if (index === -1)
     return res.status(404).json({ message: "Venda não encontrada." });
 
   const {
     id_moto,
-    login_vendedor,
-    login_cliente,
+    nome_vendedor,
+    nome_cliente,
     data,
     valor,
     forma_pagamento,
@@ -84,8 +84,8 @@ const atualizarVenda = (req, res) => {
   vendas[index] = {
     ...vendas[index],
     id_moto: id_moto != null ? Number(id_moto) : vendas[index].id_moto,
-    login_vendedor: login_vendedor ?? vendas[index].login_vendedor,
-    login_cliente: login_cliente ?? vendas[index].login_cliente,
+    nome_vendedor: nome_vendedor ?? vendas[index].nome_vendedor,
+    nome_cliente: nome_cliente ?? vendas[index].nome_cliente,
     data: data ?? vendas[index].data,
     valor: valor != null ? Number(valor) : vendas[index].valor,
     forma_pagamento: forma_pagamento ?? vendas[index].forma_pagamento,
@@ -96,7 +96,7 @@ const atualizarVenda = (req, res) => {
 
 const deletarVenda = (req, res) => {
   const id = Number(req.params.id);
-  const index = vendas.findIndex(v => v.id === id);
+  const index = vendas.findIndex((v) => v.id === id);
   if (index === -1)
     return res.status(404).json({ message: "Venda não encontrada." });
   const removida = vendas.splice(index, 1)[0];

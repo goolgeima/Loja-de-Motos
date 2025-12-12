@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
+import "./VendedoresPage.css";
 
 export function VendedoresPage({ usuario }) {
   const [vendedores, setVendedores] = useState([]);
 
   const [id, setId] = useState("");
-  const [login, setLogin] = useState("");
   const [nome, setNome] = useState("");
   const [telefone, setTelefone] = useState("");
   const [editandoId, setEditandoId] = useState(null);
@@ -20,7 +20,6 @@ export function VendedoresPage({ usuario }) {
 
   function limparForm() {
     setId("");
-    setLogin("");
     setNome("");
     setTelefone("");
     setEditandoId(null);
@@ -29,7 +28,6 @@ export function VendedoresPage({ usuario }) {
   function carregarParaEdicao(v) {
     setEditandoId(v.id);
     setId(v.id);
-    setLogin(v.login);
     setNome(v.nome);
     setTelefone(v.telefone);
   }
@@ -37,15 +35,18 @@ export function VendedoresPage({ usuario }) {
   async function handleSalvarVendedor(e) {
     e.preventDefault();
 
-    // logs de erros
-    if (!id || isNaN(idNum) || id <= 0) {
-        alert("Informe um ID válido.");
-        return;
+    const idNum = Number(id);
+    if (!id || isNaN(idNum) || idNum <= 0) {
+      alert("Informe um ID válido.");
+      return;
+    }
+    if (!nome) {
+      alert("Preencha o nome.");
+      return;
     }
 
     const vendedor = {
-      id: Number(id),
-      login,
+      id: idNum,
       nome,
       telefone,
     };
@@ -70,7 +71,6 @@ export function VendedoresPage({ usuario }) {
     }
 
     const salvo = await resp.json();
-
     if (editandoId) {
       setVendedores((prev) =>
         prev.map((v) => (v.id === editandoId ? salvo : v))
@@ -89,7 +89,9 @@ export function VendedoresPage({ usuario }) {
       `http://localhost:3000/vendedores/${idVendedor}`,
       {
         method: "DELETE",
-        headers: { perfil: usuario.perfil },
+        headers: {
+          perfil: usuario.perfil,
+        },
       }
     );
 
@@ -103,62 +105,65 @@ export function VendedoresPage({ usuario }) {
   }
 
   return (
-    <div>
+    <div className="vendedores-root">
       <h2>Vendedores</h2>
 
-      <ul>
-        {vendedores.map((v) => (
-          <li key={v.id}>
-            {v.id} - {v.nome} ({v.login}) - Tel: {v.telefone}
-            {usuario.perfil === "VENDEDOR" && (
-              <>
-                {" "}
-                <button onClick={() => carregarParaEdicao(v)}>Editar</button>
-                <button onClick={() => handleExcluirVendedor(v.id)}>
-                  Excluir
-                </button>
-              </>
-            )}
-          </li>
-        ))}
-      </ul>
-
-      {usuario.perfil === "VENDEDOR" && (
-        <div>
-          <h3>{editandoId ? "Editar vendedor" : "Cadastrar novo vendedor"}</h3>
-          <form onSubmit={handleSalvarVendedor}>
-            <input
-              placeholder="id"
-              value={id}
-              onChange={(e) => setId(e.target.value)}
-              disabled={!!editandoId}
-            />
-            <input
-              placeholder="login"
-              value={login}
-              onChange={(e) => setLogin(e.target.value)}
-            />
-            <input
-              placeholder="nome"
-              value={nome}
-              onChange={(e) => setNome(e.target.value)}
-            />
-            <input
-              placeholder="telefone"
-              value={telefone}
-              onChange={(e) => setTelefone(e.target.value)}
-            />
-            <button type="submit">
-              {editandoId ? "Atualizar vendedor" : "Salvar vendedor"}
-            </button>
-            {editandoId && (
-              <button type="button" onClick={limparForm}>
-                Cancelar edição
-              </button>
-            )}
-          </form>
+      <div className="vendedores-layout">
+        <div className="vendedores-list">
+          <ul>
+            {vendedores.map((v) => (
+              <li key={v.id}>
+                <div className="vendedor-info">
+                  {v.id} - {v.nome} - {v.telefone}
+                </div>
+                {usuario.perfil === "VENDEDOR" && (
+                  <div className="vendedor-actions">
+                    <button onClick={() => carregarParaEdicao(v)}>Editar</button>
+                    <button onClick={() => handleExcluirVendedor(v.id)}>
+                      Excluir
+                    </button>
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
         </div>
-      )}
+
+        {usuario.perfil === "VENDEDOR" && (
+          <div className="vendedores-form">
+            <h3>
+              {editandoId ? "Editar vendedor" : "Cadastrar novo vendedor"}
+            </h3>
+            <form onSubmit={handleSalvarVendedor}>
+              <input
+                placeholder="ID"
+                value={id}
+                onChange={(e) => setId(e.target.value)}
+                disabled={!!editandoId}
+              />
+              <input
+                placeholder="Nome"
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+              />
+              <input
+                placeholder="Telefone"
+                value={telefone}
+                onChange={(e) => setTelefone(e.target.value)}
+              />
+
+              <button type="submit">
+                {editandoId ? "Atualizar vendedor" : "Salvar vendedor"}
+              </button>
+              {editandoId && (
+                <button type="button" onClick={limparForm}>
+                  Cancelar edição
+                </button>
+              )}
+            </form>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
