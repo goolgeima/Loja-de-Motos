@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import "./App.css"
+
 export function MotosPage({ usuario }) {
   const [motos, setMotos] = useState([]);
 

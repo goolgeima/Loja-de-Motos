@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { MotosPage } from "./MotosPage";
-import { ClientesPage } from "./ClientesPage";
-import { VendedoresPage } from "./VendedoresPage";
-import { VendasPage } from "./VendasPage";
+import { MotosPage } from "./pages/MotosPage.jsx";
+import { ClientesPage } from "./pages/ClientesPage.jsx";
+import { VendedoresPage } from "./pages/VendedoresPage.jsx";
+import { VendasPage } from "./pages/VendasPage.jsx";
 import "./App.css";
 
 function App() {
