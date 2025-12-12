@@ -1,6 +1,6 @@
 // Array em memória
 let usuarios = [
-  { login: "admin", senha: "123", perfil: "ADMIN", motoFavorita: "CB 500F" },
+  { login: "vendedor", senha: "123", perfil: "VENDEDOR", motoFavorita: "CB 500F" },
 ];
 
 // LISTAR todos

@@ -37,6 +37,12 @@ export function VendedoresPage({ usuario }) {
   async function handleSalvarVendedor(e) {
     e.preventDefault();
 
+    // logs de erros
+    if (!id || isNaN(idNum) || id <= 0) {
+        alert("Informe um ID válido.");
+        return;
+    }
+
     const vendedor = {
       id: Number(id),
       login,

@@ -1,22 +1,28 @@
-// cliente-controller.js
-const { clientes } = require("../data/base"); // ou de onde você importa
+let clientes = [
+  { id: 1, login: "cliente1", nome: "João", cpf: "11111111111", telefone: "11999999999" },
+];
 
 const listarClientes = (req, res) => {
-  res.json(clientes);
+  res.status(200).json({ clientes });
 };
 
 const criarCliente = (req, res) => {
-  const { id, login, nome, cpf, telefone, senha } = req.body;
+  const { id, login, nome, cpf, telefone } = req.body;
 
-  if (!id || !login || !nome || !cpf || !telefone || !senha) {
+  if (!id || !login || !nome || !cpf || !telefone) {
     return res
       .status(400)
-      .json({ message: "Todos os campos do cliente são obrigatórios." });
+      .json({ message: "id, login, nome, cpf e telefone são obrigatórios." });
   }
 
-  const existente = clientes.find((c) => c.id === Number(id));
-  if (existente) {
+  const existenteId = clientes.find(c => c.id === Number(id));
+  if (existenteId) {
     return res.status(409).json({ message: "ID de cliente já existe." });
+  }
+
+  const existenteLogin = clientes.find(c => c.login === login);
+  if (existenteLogin) {
+    return res.status(409).json({ message: "Login de cliente já existe." });
   }
 
   const novo = {
@@ -25,76 +31,53 @@ const criarCliente = (req, res) => {
     nome,
     cpf,
     telefone,
-    senha,
   };
 
   clientes.push(novo);
   res.status(201).json(novo);
 };
 
-const atualizarCliente = (req, res) => {
-  const { id } = req.params;
-  const { login, nome, cpf, telefone } = req.body;
-
-  const cliente = clientes.find((c) => c.id === Number(id));
-  if (!cliente) {
-    return res.status(404).json({ message: "Cliente não encontrado." });
-  }
-
-  if (!login || !nome || !cpf || !telefone) {
-    return res
-      .status(400)
-      .json({ message: "Todos os campos do cliente são obrigatórios." });
-  }
-
-  cliente.login = login;
-  cliente.nome = nome;
-  cliente.cpf = cpf;
-  cliente.telefone = telefone;
-
-  res.json(cliente);
+const obterClientePorId = (req, res) => {
+  const id = Number(req.params.id);
+  const cliente = clientes.find(c => c.id === id);
+  if (!cliente) return res.status(404).json({ message: "Cliente não encontrado." });
+  res.status(200).json(cliente);
 };
 
-const deletarCliente = (req, res) => {
-  const { id } = req.params;
-
-  const index = clientes.findIndex((c) => c.id === Number(id));
+const atualizarCliente = (req, res) => {
+  const id = Number(req.params.id);
+  const index = clientes.findIndex(c => c.id === id);
   if (index === -1) {
     return res.status(404).json({ message: "Cliente não encontrado." });
   }
 
-  clientes.splice(index, 1);
-  res.status(204).send();
+  const { login, nome, cpf, telefone } = req.body;
+
+  clientes[index] = {
+    ...clientes[index],
+    login: login ?? clientes[index].login,
+    nome: nome ?? clientes[index].nome,
+    cpf: cpf ?? clientes[index].cpf,
+    telefone: telefone ?? clientes[index].telefone,
+  };
+
+  res.status(200).json(clientes[index]);
 };
 
-// NOVO: atualizar senha do cliente
-const atualizarSenhaCliente = (req, res) => {
-  const { login } = req.params;
-  const { senhaAntiga, novaSenha } = req.body;
-
-  if (!senhaAntiga || !novaSenha) {
-    return res
-      .status(400)
-      .json({ message: "Senha antiga e nova senha são obrigatórias." });
-  }
-
-  const cliente = clientes.find((c) => c.login === login);
-  if (!cliente) {
+const deletarCliente = (req, res) => {
+  const id = Number(req.params.id);
+  const index = clientes.findIndex(c => c.id === id);
+  if (index === -1) {
     return res.status(404).json({ message: "Cliente não encontrado." });
   }
-
-  if (cliente.senha !== senhaAntiga) {
-    return res.status(400).json({ message: "Senha antiga incorreta." });
-  }
-
-  cliente.senha = novaSenha;
-  res.json({ message: "Senha atualizada com sucesso." });
+  const removido = clientes.splice(index, 1)[0];
+  res.status(200).json({ message: "Cliente removido.", cliente: removido });
 };
 
 module.exports = {
   listarClientes,
   criarCliente,
+  obterClientePorId,
   atualizarCliente,
   deletarCliente,
-  atualizarSenhaCliente,
 };

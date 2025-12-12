@@ -39,6 +39,10 @@ export function ClientesPage({ usuario }) {
 
   async function handleSalvarCliente(e) {
     e.preventDefault();
+    if (!id || isNaN(idNum) || id <= 0) {
+        alert("Informe um ID válido.");
+        return;
+      }
 
     const cliente = {
       id: Number(id),
@@ -47,6 +51,7 @@ export function ClientesPage({ usuario }) {
       cpf,
       telefone,
     };
+
 
     const url = editandoId
       ? `http://localhost:3000/clientes/${editandoId}`

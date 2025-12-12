@@ -38,7 +38,12 @@ export function VendasPage({ usuario }) {
 
   async function handleCriarVenda(e) {
     e.preventDefault();
-
+    
+    // logs de erros
+    if (!id || isNaN(idNum) || id <= 0) {
+        alert("Informe um ID válido.");
+        return;
+    }
     const nova = {
       id: Number(id),
       id_moto: Number(idMoto),
@@ -48,6 +53,7 @@ export function VendasPage({ usuario }) {
       valor: Number(valor),
       forma_pagamento: formaPagamento,
     };
+    
 
     const resp = await fetch("http://localhost:3000/vendas", {
       method: "POST",
@@ -135,17 +141,18 @@ export function VendasPage({ usuario }) {
             </select>
 
             <input
+            placeholder="Selecione a data"
               type="date"
               value={data}
               onChange={(e) => setData(e.target.value)}
             />
             <input
-              placeholder="valor"
+              placeholder="Selecione o valor"
               value={valor}
               onChange={(e) => setValor(e.target.value)}
             />
             <input
-              placeholder="forma de pagamento"
+              placeholder="Selecione a forma de pagamento"
               value={formaPagamento}
               onChange={(e) => setFormaPagamento(e.target.value)}
             />

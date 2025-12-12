@@ -3,13 +3,13 @@ import { MotosPage } from "./MotosPage";
 import { ClientesPage } from "./ClientesPage";
 import { VendedoresPage } from "./VendedoresPage";
 import { VendasPage } from "./VendasPage";
-import { AlterarSenhaPage } from "./AlterarSenhaPage";
+import "./App.css";
 
 function App() {
   const [usuario, setUsuario] = useState(null);
   const [login, setLogin] = useState("");
   const [senha, setSenha] = useState("");
-  const [pagina, setPagina] = useState("motos");
+  const [pagina, setPagina] = useState(null); // nenhuma aba selecionada
 
   useEffect(() => {
     const salvo = localStorage.getItem("usuario");
@@ -18,6 +18,12 @@ function App() {
 
   async function handleLogin(e) {
     e.preventDefault();
+
+    if (!login || !senha) {
+      alert("Preencha login e senha.");
+      return;
+    }
+
     try {
       const resp = await fetch("http://localhost:3000/usuarios/login", {
         method: "POST",
@@ -34,7 +40,7 @@ function App() {
       const info = { login: data.login, perfil: data.perfil };
       setUsuario(info);
       localStorage.setItem("usuario", JSON.stringify(info));
-      setPagina("motos");
+      setPagina(null); // começa sem página selecionada
     } catch {
       alert("Erro ao conectar com o servidor");
     }
@@ -43,31 +49,9 @@ function App() {
   function logout() {
     setUsuario(null);
     localStorage.removeItem("usuario");
-    setPagina("motos");
+    setPagina(null);
     setLogin("");
     setSenha("");
-  }
-
-  if (!usuario) {
-    return (
-      <div>
-        <h1>Login</h1>
-        <form onSubmit={handleLogin}>
-          <input
-            placeholder="login"
-            value={login}
-            onChange={(e) => setLogin(e.target.value)}
-          />
-          <input
-            placeholder="senha"
-            type="password"
-            value={senha}
-            onChange={(e) => setSenha(e.target.value)}
-          />
-          <button type="submit">Entrar</button>
-        </form>
-      </div>
-    );
   }
 
   function renderPagina() {
@@ -75,26 +59,88 @@ function App() {
     if (pagina === "clientes") return <ClientesPage usuario={usuario} />;
     if (pagina === "vendedores") return <VendedoresPage usuario={usuario} />;
     if (pagina === "vendas") return <VendasPage usuario={usuario} />;
-    if (pagina === "senha") return <AlterarSenhaPage usuario={usuario} />;
-    return null;
+    return null; // nenhuma aba selecionada
+  }
+
+  if (!usuario) {
+    return (
+      <div className="login-page">
+        <form className="card login-card" onSubmit={handleLogin}>
+          <h1>Loja de Motos</h1>
+          <p className="login-subtitle">Acesse o painel</p>
+          <input
+            placeholder="Login"
+            value={login}
+            onChange={(e) => setLogin(e.target.value)}
+          />
+          <input
+            placeholder="Senha"
+            type="password"
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
+          />
+          <button className="btn btn-primary" type="submit">
+            Entrar
+          </button>
+        </form>
+      </div>
+    );
   }
 
   return (
-    <div>
-      <p>
-        Logado como: {usuario.login} ({usuario.perfil})
-      </p>
-      <button onClick={logout}>Sair</button>
+    <div className="app">
+      <header className="topbar">
+        <div className="topbar-left">
+          <span className="logo">Loja de Motos</span>
+        </div>
+        <div className="topbar-right">
+          <span className="user-info">
+            {usuario.login} ({usuario.perfil})
+          </span>
+          <button className="btn btn-danger" onClick={logout}>
+            Sair
+          </button>
+        </div>
+      </header>
 
-      <div style={{ marginTop: 16, marginBottom: 16 }}>
-        <button onClick={() => setPagina("motos")}>Motos</button>
-        <button onClick={() => setPagina("clientes")}>Clientes</button>
-        <button onClick={() => setPagina("vendedores")}>Vendedores</button>
-        <button onClick={() => setPagina("vendas")}>Vendas</button>
-        <button onClick={() => setPagina("senha")}>Alterar senha</button>
-      </div>
+      <nav className="menu">
+        <button
+          className={pagina === "motos" ? "menu-btn active" : "menu-btn"}
+          onClick={() =>
+            setPagina((atual) => (atual === "motos" ? null : "motos"))
+          }
+        >
+          Motos
+        </button>
+        <button
+          className={pagina === "clientes" ? "menu-btn active" : "menu-btn"}
+          onClick={() =>
+            setPagina((atual) => (atual === "clientes" ? null : "clientes"))
+          }
+        >
+          Clientes
+        </button>
+        <button
+          className={pagina === "vendedores" ? "menu-btn active" : "menu-btn"}
+          onClick={() =>
+            setPagina((atual) =>
+              atual === "vendedores" ? null : "vendedores"
+            )
+          }
+        >
+          Vendedores
+        </button>
+        <button
+          className={pagina === "vendas" ? "menu-btn active" : "menu-btn"}
+          onClick={() =>
+            setPagina((atual) => (atual === "vendas" ? null : "vendas"))
+          }
+        >
+          Vendas
+        </button>
+      </nav>
 
-      {renderPagina()}
+      <main className="content">{renderPagina()}</main>
     </div>
   );
 }
