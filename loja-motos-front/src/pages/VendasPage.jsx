@@ -17,6 +17,7 @@ export function VendasPage({ usuario }) {
 
   const [campoOrdenacao, setCampoOrdenacao] = useState("data");
   const [direcaoOrdenacao, setDirecaoOrdenacao] = useState("desc");
+  const [filtroTexto, setFiltroTexto] = useState("");
 
   useEffect(() => {
     async function carregarTudo() {
@@ -108,8 +109,20 @@ export function VendasPage({ usuario }) {
     0
   );
 
+  // filtro por cliente / vendedor (e moto, se quiser)
+  const vendasFiltradas = vendas.filter((v) => {
+    if (!filtroTexto.trim()) return true;
+    const termo = filtroTexto.toLowerCase();
+    const motoTexto = getModeloMoto(v.id_moto).toLowerCase();
+    return (
+      v.nome_cliente.toLowerCase().includes(termo) ||
+      v.nome_vendedor.toLowerCase().includes(termo) ||
+      motoTexto.includes(termo)
+    );
+  });
+
   // ordenação
-  const vendasOrdenadas = [...vendas].sort((a, b) => {
+  const vendasOrdenadas = [...vendasFiltradas].sort((a, b) => {
     const dir = direcaoOrdenacao === "asc" ? 1 : -1;
 
     if (campoOrdenacao === "valor") {
@@ -123,8 +136,6 @@ export function VendasPage({ usuario }) {
     const vb = String(b[campoOrdenacao] || "");
     return va.localeCompare(vb) * dir;
   });
-
-  const ultimasVendas = vendasOrdenadas.slice(0, 5);
 
   return (
     <div className="vendas-root">
@@ -146,28 +157,36 @@ export function VendasPage({ usuario }) {
         </div>
       </div>
 
-            <h3>Histórico de Vendas</h3>
-      <div className="vendas-ordenacao">
-        <span>Ordenar por:</span>
-        <select
-          value={campoOrdenacao}
-          onChange={(e) => setCampoOrdenacao(e.target.value)}
-        >
-          <option value="data">Data</option>
-          <option value="valor">Valor</option>
-          <option value="nome_cliente">Nome do cliente</option>
-          <option value="nome_vendedor">Nome do vendedor</option>
-        </select>
+      <div className="vendas-filtros">
+        <input
+          placeholder="Filtre aqui"
+          value={filtroTexto}
+          onChange={(e) => setFiltroTexto(e.target.value)}
+        />
 
-        <select
-          value={direcaoOrdenacao}
-          onChange={(e) => setDirecaoOrdenacao(e.target.value)}
-        >
-          <option value="asc">Crescente</option>
-          <option value="desc">Decrescente</option>
-        </select>
+        <div className="vendas-ordenacao">
+          <span>Ordenar por:</span>
+          <select
+            value={campoOrdenacao}
+            onChange={(e) => setCampoOrdenacao(e.target.value)}
+          >
+            <option value="data">Data</option>
+            <option value="valor">Valor</option>
+            <option value="nome_cliente">Nome do cliente</option>
+            <option value="nome_vendedor">Nome do vendedor</option>
+          </select>
+
+          <select
+            value={direcaoOrdenacao}
+            onChange={(e) => setDirecaoOrdenacao(e.target.value)}
+          >
+            <option value="asc">Ascendente</option>
+            <option value="desc">Descendente</option>
+          </select>
+        </div>
       </div>
 
+      <h3>Vendas</h3>
       <ul className="vendas-list">
         {vendasOrdenadas.map((v) => (
           <li key={v.id}>
