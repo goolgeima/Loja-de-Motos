@@ -66,7 +66,7 @@ const criarMoto = (req, res) => {
   res.status(201).json(nova);
 };
 
-// OBTER moto por ID
+// procura a moto pelo id
 const obterMotoPorId = (req, res) => {
   const id = Number(req.params.id);
   const moto = motos.find((m) => m.id === id);

@@ -1,15 +1,14 @@
-// Array em memória
 let usuarios = [
   { login: "gustavovendedor", senha: "123", perfil: "VENDEDOR", motoFavorita: "GS 1300" },
   { login: "gustavocliente", senha: "123", perfil: "CLIENTE", motoFavorita: "GS 1300" }
 ];
 
-// LISTAR todos
+
 const listarUsuarios = (req, res) => {
   res.status(200).json({ usuarios });
 };
 
-// CRIAR
+
 const criarUsuario = (req, res) => {
   const { login, senha, perfil, motoFavorita } = req.body;
 
@@ -29,7 +28,7 @@ const criarUsuario = (req, res) => {
   res.status(201).json(novo);
 };
 
-// OBTER por login
+// procura pelo login
 const obterUsuarioPorLogin = (req, res) => {
   const { login } = req.params;
   const usuario = usuarios.find(u => u.login === login);
