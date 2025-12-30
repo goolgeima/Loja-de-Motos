@@ -64,8 +64,8 @@ Rotas principais:
 
 "npm run dev"
 
-4. A aplicação ficará disponível (por padrão) em:
-- `http://localhost:5173` (ou porta indicada pelo Vite)
+4. A aplicação ficará disponível em:
+- `http://localhost:5173`
 
 ---
 
