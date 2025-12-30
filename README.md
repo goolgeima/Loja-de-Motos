@@ -99,19 +99,19 @@ Esses usuários são usados para testar os dois perfis de acesso.
 
 ### Regras de permissão
 
-- **CLIENTE**
+ **CLIENTE**
 - Menu: só enxerga as páginas **Motos** e **Vendas**.
 - Não pode criar, editar ou excluir nenhum registro.
 - Apenas visualiza as listas.
 
-- **VENDEDOR**
+ **VENDEDOR**
 - Menu: enxerga todas as páginas:
  - Motos, Clientes, Vendedores, Vendas, Usuários.
 - Pode criar, editar e excluir registros em todas essas entidades.
 
 ### Entidades e CRUD
 
-- **Motos**
+ **Motos**
 - Campos: `id`, `marca`, `modelo`, `ano`, `cilindrada`, `cavalos`, `estilo`, `quilometragem`, `preco`.
 - Funcionalidades:
  - Listar motos.
@@ -119,7 +119,7 @@ Esses usuários são usados para testar os dois perfis de acesso.
  - Editar moto existente.
  - Excluir moto.
 
-- **Clientes**
+ **Clientes**
 - Campos: `id`, `nome`, `cpf`, `telefone`.
 - Funcionalidades:
  - Listar clientes.
@@ -127,7 +127,7 @@ Esses usuários são usados para testar os dois perfis de acesso.
  - Editar cliente.
  - Excluir cliente.
 
-- **Vendedores**
+ **Vendedores**
 - Campos: `id`, `nome`, `telefone`.
 - Funcionalidades:
  - Listar vendedores.
@@ -135,7 +135,7 @@ Esses usuários são usados para testar os dois perfis de acesso.
  - Editar vendedor.
  - Excluir vendedor.
 
-- **Usuários**
+ **Usuários**
 - Campos: `login`, `senha`, `perfil`, `motoFavorita`.
 - Funcionalidades:
  - Listar usuários.
@@ -143,7 +143,7 @@ Esses usuários são usados para testar os dois perfis de acesso.
  - Editar usuário (alterar senha, perfil e moto favorita; login não muda).
  - Excluir usuário.
 
-- **Vendas**
+ **Vendas**
 - Campos: `id`, `id_moto`, `nome_cliente`, `nome_vendedor`, `data`, `valor`, `forma_pagamento`.
 - Funcionalidades:
  - Registrar novas vendas vinculadas a uma moto e a nomes de cliente/vendedor.
@@ -199,7 +199,7 @@ Também há uma Lista de vendas com as seguintes informações:
 
 ## Tratamento de erros
 
-- Backend:
+ Backend:
 - Valida campos obrigatórios e tipos básicos (ex.: `id`, `valor`).
 - Retorna códigos de status adequados (400, 404, 409, 401).
 - Mensagens de erro em JSON, como:
@@ -208,7 +208,7 @@ Também há uma Lista de vendas com as seguintes informações:
  - `"Usuário não encontrado."`
  - `"Credenciais inválidas."`
 
-- Frontend:
+ Frontend:
 - Exibe `alert()` em casos de:
  - Falha de validação local (ID inválido, campos vazios).
  - Erros na resposta do backend (status não-ok).
@@ -217,24 +217,15 @@ Também há uma Lista de vendas com as seguintes informações:
 
 ## Decisões de design
 
-- **Separação entre pessoa e usuário**:
+ **Separação entre pessoa e usuário**:
 - Cliente e Vendedor guardam apenas dados pessoais (nome, telefone, etc.).
 - Usuário guarda credenciais (login, senha, perfil) e uma informação opcional (moto favorita).
 - Isso evita acoplar regras de autenticação diretamente às entidades de domínio (Clientes/Vendedores).
 
-- **Dados em memória**:
+ **Dados em memória**:
 - Para simplificar a entrega do trabalho, as entidades são mantidas em arrays no servidor.
-- Facilita entender a lógica de CRUD e autenticação sem dependência de banco externo.
+- Facilita a lógica de CRUD e autenticação sem dependência de banco externo.
 
-- **Regra de visualização para clientes**:
+ **Regra de visualização para clientes**:
 - Clientes interagem com o sistema apenas como consumidores de informação (Motos e Vendas).
 - Todas as ações de cadastro são concentradas no perfil VENDEDOR.
-
----
-
-## Possíveis extensões futuras
-
-- Persistir os dados em um banco relacional (MySQL, PostgreSQL) em vez de arrays em memória.
-- Implementar autenticação com JWT e proteção de rotas no backend.
-- Adicionar gráficos no dashboard (ex.: vendas por mês, motos mais vendidas).
-- Criar vínculo direto entre Usuário e Cliente/Vendedor (ex.: usuário do cliente X).
