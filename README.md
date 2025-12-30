@@ -13,7 +13,6 @@ Aplicação web para gerenciamento de uma loja de motos, com autenticação de u
 **Backend**
 - Node.js
 - Express
-- CORS
 
 **Dados**
 - Armazenamento em memória (arrays no servidor Node)
